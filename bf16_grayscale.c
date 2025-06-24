@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
 #include <math.h>
 
 // Size of the output window, NOT the size of the frambuffer
