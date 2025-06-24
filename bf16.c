@@ -202,7 +202,7 @@ int main (int argc, char *argv[]) {
   fclose(out);
 
   // Initialize SDL for rendering and create the window...
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     printf("SDL initialization failed: %s\n", SDL_GetError());
     return 1;
   }
@@ -215,12 +215,6 @@ int main (int argc, char *argv[]) {
     SDL_WINDOW_SHOWN
   );
   SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-  // Initialize SDL for audio and open an audio device...
-  if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-    SDL_Log("SDL_Init error: %s", SDL_GetError());
-    return 1;
-  }
 
   SDL_AudioSpec want, have;
   SDL_zero(want);
