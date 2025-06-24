@@ -1,0 +1,43 @@
+name: Compile C Project (Windows)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up MinGW-w64 (MSYS2)
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        update: true
+        install: >
+          mingw-w64-x86_64-gcc
+          make
+
+    - name: Compile with Make
+      shell: msys2 {0}
+      run: |
+        make
+
+    - name: Upload compiled executable Color
+      uses: actions/upload-artifact@v4
+      with:
+        name: compiled-executable
+        path: bf16.exe
+        
+    - name: Upload compiled executable Grayscale
+      uses: actions/upload-artifact@v4
+      with:
+        name: compiled-executable
+        path: bf16_grayscale.exe
