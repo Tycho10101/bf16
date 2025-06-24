@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -lSDL2 -lm
+CFLAGS = -lSDL2main -lSDL2 -lm
 
 all: bf16 bf16_grayscale
 
