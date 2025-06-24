@@ -25,23 +25,30 @@ jobs:
       run: |
         Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.5/SDL2-devel-2.30.5-VC.zip" -OutFile "SDL2-devel.zip"
         Expand-Archive -Path "SDL2-devel.zip" -DestinationPath "."
+        # Optional: Add a debug step here to verify extraction
+        # Get-ChildItem -Recurse -Path "." | Select-Object FullName | Format-Table -Wrap
       shell: pwsh
 
     - name: Add SDL2 to PATH
+      # This step is primarily for SDL2.dll at runtime, not for compilation includes/libs
       run: |
-        # Use github.workspace to get the correct drive and path
         echo "${{ github.workspace }}\SDL2-2.30.5\lib\x64" >> $env:GITHUB_PATH
         echo "${{ github.workspace }}\SDL2-2.30.5\bin\x64" >> $env:GITHUB_PATH
       shell: pwsh
 
     - name: Compile C Projects
       run: |
-        # Call the vcvarsall.bat specific to the detected VS Enterprise install path
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        # Now cl.exe should be in the PATH set by vcvarsall.bat
-        cl.exe /EHsc /Zi bf16.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16.exe
-        cl.exe /EHsc /Zi bf16_grayscale.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16_grayscale.exe
+        # Construct the full absolute path for SDL2 includes and libraries
+        set "SDL2_INCLUDE_PATH=%GITHUB_WORKSPACE%\SDL2-2.30.5\include"
+        set "SDL2_LIB_PATH=%GITHUB_WORKSPACE%\SDL2-2.30.5\lib\x64"
+
+        echo "Compiling bf16.c with include path: %SDL2_INCLUDE_PATH%"
+        cl.exe /EHsc /Zi bf16.c /I"%SDL2_INCLUDE_PATH%" /link /LIBPATH:"%SDL2_LIB_PATH%" SDL2.lib SDL2main.lib /out:bf16.exe
+
+        echo "Compiling bf16_grayscale.c with include path: %SDL2_INCLUDE_PATH%"
+        cl.exe /EHsc /Zi bf16_grayscale.c /I"%SDL2_INCLUDE_PATH%" /link /LIBPATH:"%SDL2_LIB_PATH%" SDL2.lib SDL2main.lib /out:bf16_grayscale.exe
       shell: cmd
 
     - name: Upload Color Artifact
