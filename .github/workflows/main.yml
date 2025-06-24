@@ -26,7 +26,7 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.5/SDL2-devel-2.30.5-VC.zip" -OutFile "SDL2-devel.zip"
         Expand-Archive -Path "SDL2-devel.zip" -DestinationPath "."
         # Optional: Add a debug step here to verify extraction
-        # Get-ChildItem -Recurse -Path "." | Select-Object FullName | Format-Table -Wrap
+        Get-ChildItem -Recurse -Path "." | Select-Object FullName | Format-Table -Wrap
       shell: pwsh
 
     - name: Add SDL2 to PATH
