@@ -31,14 +31,24 @@ jobs:
       run: |
         make
 
-    - name: Upload compiled executable Color
-      uses: actions/upload-artifact@v4
-      with:
-        name: bf16
-        path: bf16.exe
+    - name: Locate SDL2.dll and copy to build directory
+      shell: msys2 {0}
+      run: |
+        SDL2_DLL_PATH=$(find /mingw64/bin -name "SDL2.dll")
+        echo "Found SDL2.dll at: $SDL2_DLL_PATH"
         
-    - name: Upload compiled executable Grayscale
+        mkdir release_package
+        cp bf16.exe release_package/
+        cp bf16_grayscale.exe release_package/
+        cp "$SDL2_DLL_PATH" release_package/
+
+    - name: Archive compiled executable and DLL
+      run: |
+        Compress-Archive -Path release_package -DestinationPath bf16_windows.zip
+      shell: pwsh
+
+    - name: Upload compiled package as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: bf16_grayscale
-        path: bf16_grayscale.exe
+        name: bf16-windows-package
+        path: bf16_windows.zip
