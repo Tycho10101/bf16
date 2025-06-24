@@ -24,6 +24,7 @@ jobs:
         install: >
           mingw-w64-x86_64-gcc
           make
+          mingw-w64-x86_64-SDL2
 
     - name: Compile with Make
       shell: msys2 {0}
