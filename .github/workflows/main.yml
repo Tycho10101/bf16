@@ -38,6 +38,13 @@ jobs:
         echo "C:\a\${{ github.repository }} \SDL2-2.30.5\bin\x64" >> $env:GITHUB_PATH
       shell: pwsh
 
+    - name: Debug Environment
+      run: |
+        Get-ChildItem Env: | Sort-Object Name | Format-Table -Wrap
+        where cl.exe
+        where SDL2.dll
+      shell: pwsh
+
     - name: Compile C Projects
       # Use the "vcvarsall.bat" script to set up the MSVC environment
       # before calling cl.exe
