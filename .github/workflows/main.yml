@@ -56,10 +56,10 @@ jobs:
     shell: cmd
     
     - name: Upload Color Artifact
-    uses: actions/upload-artifact@v4
-    with:
-      name: bf16
-      path: bf16.exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: bf16
+        path: bf16.exe
 
     - name: Upload Grayscale Artifact
       uses: actions/upload-artifact@v4
