@@ -28,32 +28,21 @@ jobs:
       shell: pwsh
 
     - name: Add SDL2 to PATH
-      # Make sure these paths are correct relative to where SDL2 is extracted
-      # C:\a\your-repo-name\your-project-name might be just C:\a\your-repo-name if your project isn't in a subfolder
-      # GitHub Actions checks out to C:\a\<owner>\<repo> by default.
-      # So, if SDL2-2.30.5 is extracted to the root of the repo (where the workflow runs),
-      # the paths might simply be like this:
       run: |
-        echo "C:\a\${{ github.repository }} \SDL2-2.30.5\lib\x64" >> $env:GITHUB_PATH
-        echo "C:\a\${{ github.repository }} \SDL2-2.30.5\bin\x64" >> $env:GITHUB_PATH
-      shell: pwsh
-
-    - name: Debug Environment
-      run: |
-        Get-ChildItem Env: | Sort-Object Name | Format-Table -Wrap
-        where cl.exe
-        where SDL2.dll
+        # Use github.workspace to get the correct drive and path
+        echo "${{ github.workspace }}\SDL2-2.30.5\lib\x64" >> $env:GITHUB_PATH
+        echo "${{ github.workspace }}\SDL2-2.30.5\bin\x64" >> $env:GITHUB_PATH
       shell: pwsh
 
     - name: Compile C Projects
-      # Use the "vcvarsall.bat" script to set up the MSVC environment
-      # before calling cl.exe
       run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+        # Call the vcvarsall.bat specific to the detected VS Enterprise install path
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
 
+        # Now cl.exe should be in the PATH set by vcvarsall.bat
         cl.exe /EHsc /Zi bf16.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16.exe
         cl.exe /EHsc /Zi bf16_grayscale.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16_grayscale.exe
-      shell: cmd # Keep this as cmd for vcvarsall.bat
+      shell: cmd
 
     - name: Upload Color Artifact
       uses: actions/upload-artifact@v4
