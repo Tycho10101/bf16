@@ -1,0 +1,52 @@
+name: Compile C Project with SDL2 (Windows)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up MSVC
+      uses: microsoft/setup-msbuild@v2
+      with:
+        msbuild-version: latest
+
+    - name: Download SDL2 Development Libraries
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.5/SDL2-devel-2.30.5-VC.zip" -OutFile "SDL2-devel.zip"
+        Expand-Archive -Path "SDL2-devel.zip" -DestinationPath "."
+      shell: pwsh
+
+    - name: Add SDL2 to PATH
+      run: |
+        echo "C:\a\your-repo-name\your-project-name\SDL2-2.30.5\lib\x64" >> $env:GITHUB_PATH
+        echo "C:\a\your-repo-name\your-project-name\SDL2-2.30.5\bin\x64" >> $env:GITHUB_PATH
+      shell: pwsh
+
+    - name: Compile C Project
+      run: |
+        cl.exe /EHsc /Zi bf16.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16.exe
+        cl.exe /EHsc /Zi bf16_grayscale.c /I"SDL2-2.30.5\include" /link /LIBPATH:"SDL2-2.30.5\lib\x64" SDL2.lib SDL2main.lib /out:bf16_grayscale.exe
+      shell: cmd
+
+    - name: Upload Color Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: bf16
+        path: bf16.exe
+
+    - name: Upload Grayscale Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: bf16_grayscale
+        path: bf16_grayscale.exe
