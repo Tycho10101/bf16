@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc -DSDL_MAIN_HANDLED
 CFLAGS = -lSDL2main -lSDL2 -lm
 
 all: bf16 bf16_grayscale
